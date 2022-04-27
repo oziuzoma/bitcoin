@@ -1,36 +1,53 @@
-name: Merge upstream branches
+name: 'Usptream Sync'
+
 on:
- schedule:
-     # actually, ~5 minutes is the highest
-     # effective frequency you will get
- - cron:  '* * * * *'
- 
+  schedule:
+    - cron:  '0 7 * * 1,4'
+    # scheduled at 07:00 every Monday and Thursday
+
+  workflow_dispatch:  # click the button on Github repo!
+
 jobs:
-  merge:
+  sync_latest_from_upstream:
     runs-on: ubuntu-latest
+    name: Sync latest commits from upstream repo
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Merge upstream
-        run: |
-          git config --global user.name 'oziuzoma'
-          git config --global user.email 'oziuzoma@users.noreply.github.com'
+    # REQUIRED step
+    # Step 1: run a standard checkout action, provided by github
+    - name: Checkout target repo
+      uses: actions/checkout@v2
+      with:
+        # optional: set the branch to checkout,
+        # sync action checks out your 'target_sync_branch' anyway
+        ref:  my-branch
+        # REQUIRED if your upstream repo is private (see wiki)
+        persist-credentials: false
 
-          # "git checkout master" is unnecessary, already here by default
-          git pull --unshallow  # this option is very important, you would get
-                                # complains about unrelated histories without it.
-                                # (but actions/checkout@v2 can also be instructed
-                                # to fetch all git depth right from the start)
+    # REQUIRED step
+    # Step 2: run the sync action
+    - name: Sync upstream changes
+      id: sync
+      uses: aormsby/Fork-Sync-With-Upstream-action@v3.2
+      with:
+        target_sync_branch: my-branch
+        # REQUIRED 'target_repo_token' exactly like this!
+        target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+        upstream_sync_branch: main
+        upstream_sync_repo: aormsby/Fork-Sync-With-Upstream-action
+        upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_SECRET }}
 
-          git remote add upstream https://github.com/bitcoin/bitcoin
-          git fetch upstream
-          # Neither forget the -b opt,
-          # the feature/x ref is ambiguous at this stage
-          git checkout -b feature/x origin/feature/x
-          git merge --no-edit upstream/feature/x
-          git push origin feature/x
-
-          git checkout master
-          git merge --no-edit upstream/master
-          git push origin master
-
-          # etc
+        # Set test_mode true to run tests instead of the true action!!
+        test_mode: true
+      
+    # Step 3: Display a sample message based on the sync output var 'has_new_commits'
+    - name: New commits found
+      if: steps.sync.outputs.has_new_commits == 'true'
+      run: echo "New commits were found to sync."
+    
+    - name: No new commits
+      if: steps.sync.outputs.has_new_commits == 'false'
+      run: echo "There were no new commits."
+      
+    - name: Show value of 'has_new_commits'
+      run: echo ${{ steps.sync.outputs.has_new_commits }}
