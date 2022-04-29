@@ -3,7 +3,7 @@ name: Sync to Upstream
 on:
   schedule:
     - cron:  '0 16 * * 2,5'
-    # scheduled at 16:00 every Tuesday and Friday
+    # scheduled at 17:00 every Tuesday and Friday
   workflow_dispatch:
 
 jobs:
