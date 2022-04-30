@@ -1,12 +1,40 @@
-name: Sync Fork
+# name: Sync to Upstream
+# on:
+#   schedule:
+#     - cron:  '0 17 * * 2,5'
+#     # scheduled at 17:00 every Tuesday and Friday
+#   workflow_dispatch:
+# jobs:
+#   sync_with_upstream:
+#     runs-on: ubuntu-latest
+#     name: Sync HEAD with upstream latest
+#     steps:
+#     # Step 1: run a standard checkout action, provided by github
+#     - name: Checkout HEAD
+#       uses: actions/checkout@v2
+#       with:
+#         ref: main
+#     # Step 2: run this sync action - specify the upstream repo, upstream branch to sync with, and target sync branch
+#     - name: Pull upstream changes
+#       id: sync
+#       uses: oziuzoma/Fork-Sync-With-Upstream-action@v3.2
+#       with:
+#         upstream_repository: https://github.com/bitcoin/bitcoin
+#         upstream_branch: main
+
+name: Sync forked repo and push to EC2 instance on AWS
 
 on:
   schedule:
   - cron: '0 22 * * 2,6' # every Tuesday and Saturday at 10pm 
+  push:
+    branches:
+      - master
   workflow_dispatch: # on button click
 jobs:
   sync: 
     runs-on: ubuntu-latest
+    name: Sync fork repo
     steps:
       - uses: tgymnich/fork-sync@v1.4
         with:
@@ -14,16 +42,6 @@ jobs:
           owner: oziuzoma
           base: master
           head: master
-
-name: Push-to-EC2
-
-# Trigger deployment only on push to master branch
-on:
-  push:
-    branches:
-      - master
-
-jobs:
   deploy:
     name: Deploy to EC2 on master branch push
     runs-on: ubuntu-latest
@@ -39,6 +57,31 @@ jobs:
           REMOTE_HOST: ${{ secrets.DNS_NAME }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
+
+# name: Push-to-EC2
+
+# # Trigger deployment only on push to master branch
+# on:
+#   push:
+#     branches:
+#       - master
+
+# jobs:
+#   deploy:
+#     name: Deploy to EC2 on master branch push
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout the files
+#         uses: actions/checkout@v2
+
+#       - name: Deploy to Server 1
+#         uses: easingthemes/ssh-deploy@main
+#         env:
+#           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+#           REMOTE_HOST: ${{ secrets.DNS_NAME }}
+#           REMOTE_USER: ${{ secrets.USERNAME }}
+#           TARGET: ${{ secrets.TARGET_DIR }}
 
 
 
