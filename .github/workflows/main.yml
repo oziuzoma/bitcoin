@@ -2,14 +2,14 @@ name: Sync forked repo and push to EC2 instance on AWS
 
 on:
   schedule:
-  - cron: '0 22 * * 2,6' # every Tuesday and Saturday at 10pm 
-  push:
-    branches:
-      - master
+  - cron: '50 23 * * 2,6' # every Tuesday and Saturday at 10pm 
+#   push:
+#     branches:
+#       - master
   workflow_dispatch: # on button click
 jobs:
   sync: 
-    runs-on: ec2-user-latest
+    runs-on: ubuntu-latest
     name: Sync fork repo
     steps:
       - uses: tgymnich/fork-sync@v1.4
@@ -18,11 +18,7 @@ jobs:
           owner: oziuzoma
           base: master
           head: master
-  build:
-    name: Deploy to EC2 on master branch push
-    runs-on: ubuntu-latest
-
-    steps:
+  
       - name: Checkout the files
         uses: actions/checkout@v2
 
