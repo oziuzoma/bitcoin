@@ -2,7 +2,7 @@ name: Sync forked repo and push to EC2 instance on AWS
 
 on:
   schedule:
-  - cron: '50 23 * * 2,6' # every Tuesday and Saturday at 10pm 
+  - cron: '0 7 * * 1,4' # every Monday and Thursday at 7am 
 #   push:
 #     branches:
 #       - master
