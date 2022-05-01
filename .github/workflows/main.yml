@@ -9,7 +9,7 @@ on:
   workflow_dispatch: # on button click
 jobs:
   sync: 
-    runs-on: ec2-user-latest
+    runs-on: ubuntu-latest
     name: Sync fork repo
     steps:
       - uses: tgymnich/fork-sync@v1.4
