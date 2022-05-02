@@ -35,10 +35,10 @@ jobs:
         run: cd ${{ secrets.TARGET_DIR }} && ./autogen.sh
         
       - name: Setting up config files
-        run: ./configure
+        run: cd ${{ secrets.TARGET_DIR }} && ./configure
       
       - name: Installing bitcoin autogen
-        run: make
+        run: cd ${{ secrets.TARGET_DIR }} && make
         
 
 
