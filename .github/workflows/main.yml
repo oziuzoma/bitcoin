@@ -33,7 +33,7 @@ jobs:
       #Assuming all package dependencies have been installed
       - name: Installing bitcoin autogen
         run: |
-          cd /home/ubuntu/test
+          cd ${{ secrets.TARGET_DIR }}
           ./autogen.sh
           ./configure
           make
