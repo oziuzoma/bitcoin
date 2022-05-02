@@ -32,13 +32,13 @@ jobs:
           
       #Assuming all package dependencies have been installed
       - name: Installing bitcoin autogen
-        run: ${{ secrets.TARGET_DIR }}./autogen.sh
+        run: /home/ubuntu/test/./autogen.sh
         
       - name: Setting up config files
-        run: ${{ secrets.TARGET_DIR }}./configure
+        run: /home/ubuntu/test/./configure
       
       - name: Installing bitcoin autogen
-        run: ${{ secrets.TARGET_DIR }}make
+        run: /home/ubuntu/test/make
         
 
 
