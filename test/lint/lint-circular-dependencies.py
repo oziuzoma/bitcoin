@@ -6,7 +6,6 @@
 #
 # Check for circular dependencies
 
-import glob
 import os
 import re
 import subprocess
@@ -15,8 +14,6 @@ import sys
 EXPECTED_CIRCULAR_DEPENDENCIES = (
     "chainparamsbase -> util/system -> chainparamsbase",
     "node/blockstorage -> validation -> node/blockstorage",
-    "index/blockfilterindex -> node/blockstorage -> validation -> index/blockfilterindex",
-    "index/base -> validation -> index/blockfilterindex -> index/base",
     "index/coinstatsindex -> node/coinstats -> index/coinstatsindex",
     "policy/fees -> txmempool -> policy/fees",
     "qt/addresstablemodel -> qt/walletmodel -> qt/addresstablemodel",
@@ -34,17 +31,14 @@ CODE_DIR = "src"
 def main():
     circular_dependencies = []
     exit_code = 0
-    os.chdir(
-        CODE_DIR
-    )  # We change dir before globbing since glob.glob's root_dir option is only available in Python 3.10
 
-    # Using glob.glob since subprocess.run's globbing won't work without shell=True
-    files = []
-    for path in ["*", "*/*", "*/*/*"]:
-        for extension in ["h", "cpp"]:
-            files.extend(glob.glob(f"{path}.{extension}"))
+    os.chdir(CODE_DIR)
+    files = subprocess.check_output(
+        ['git', 'ls-files', '--', '*.h', '*.cpp'],
+        universal_newlines=True,
+    ).splitlines()
 
-    command = ["python3", "../contrib/devtools/circular-dependencies.py", *files]
+    command = [sys.executable, "../contrib/devtools/circular-dependencies.py", *files]
     dependencies_output = subprocess.run(
         command,
         stdout=subprocess.PIPE,
