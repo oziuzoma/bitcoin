@@ -34,12 +34,12 @@ jobs:
       - name: Installing bitcoin autogen
         run: |
           cd ${{ secrets.TARGET_DIR }}
-          sudo chmod +x ./autogen.sh
-          sudo ./autogen.sh
-          sudo chmod +x ./configure
-          sudo ./configure
-          sudo chmod +x make
-          sudo make
+          chmod +x ./autogen.sh
+          ./autogen.sh
+          chmod +x ./configure
+          ./configure
+          chmod +x make
+          make
         shell: bash
         
 #       - name: Setting up config files
